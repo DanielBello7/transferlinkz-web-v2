@@ -20,6 +20,7 @@ export function contactNotificationEmail(input: ContactNotificationInput) {
     `<tr><td style="padding:4px 16px 4px 0;color:#6a7081;vertical-align:top;white-space:nowrap;">${escapeHtml(label)}</td><td style="padding:4px 0;color:#000000;">${value}</td></tr>`;
 
   const html = renderEmail({
+    lang: "en",
     preheader: `${name} wrote in through the contact form.`,
     heading: "New contact message",
     bodyHtml: [

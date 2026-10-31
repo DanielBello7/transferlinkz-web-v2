@@ -11,11 +11,13 @@ export type RoleNavItem = {
 
 type RoleNavProps = {
   items: RoleNavItem[];
+  // Accessible name of the strip ("Solutions by role")
+  label: string;
 };
 
 // Pinned to the top of the viewport while the role sections scroll past. The
 // pill for the section on screen is highlighted in that role's colour.
-export function RoleNav({ items }: RoleNavProps) {
+export function RoleNav({ items, label }: RoleNavProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -52,7 +54,7 @@ export function RoleNav({ items }: RoleNavProps) {
 
   return (
     <nav
-      aria-label="Solutions by role"
+      aria-label={label}
       className="sticky top-0 z-20 border-y border-line-light bg-white"
     >
       <div className="mx-auto max-w-[1240px] border-x border-line-light px-4 py-3">

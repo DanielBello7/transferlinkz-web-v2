@@ -1,10 +1,9 @@
 import type { CSSProperties } from "react";
 import { CheckBadgeIcon } from "@/components/check-badge-icon";
 import { Reveal } from "@/components/reveal";
-import type { SolutionCard } from "../../roles";
 
 type RoleCardProps = {
-  card: SolutionCard;
+  card: { title: string; description: string };
   accent: string;
   tint: string;
   // Cards are white on a grey section and grey on a white one

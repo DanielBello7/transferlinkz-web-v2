@@ -10,26 +10,35 @@ function mailto({ subject, body }: MailtoOptions) {
   return `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
-// Enterprise enquiries are an email to the team, so the draft asks for what
-// they need to know: the business, volumes and destinations.
-function enquiryBody(intro: string) {
-  return [
-    "Hi TransferLinkz team,",
-    "",
-    intro,
-    "",
-    "Business name:",
-    "Transfer volumes (per month):",
-    "Destinations:",
-    "",
-    "Thanks!",
-  ].join("\n");
-}
-
 // Early access is a form on its own page (the signups go to the database)
 export const WAITLIST_HREF = "/waitlist";
 
-export const ENTERPRISE_HREF = mailto({
-  subject: "TransferLinkz enterprise enquiry",
-  body: enquiryBody("I'd like to talk about an enterprise plan."),
-});
+// The words of the enterprise enquiry draft (dictionary: home.pricing.enterpriseEmail)
+type EnterpriseEmailText = {
+  subject: string;
+  greeting: string;
+  intro: string;
+  businessName: string;
+  volumes: string;
+  destinations: string;
+  thanks: string;
+};
+
+// Enterprise enquiries are an email to the team, so the draft asks for what
+// they need to know: the business, volumes and destinations.
+export function enterpriseHref(text: EnterpriseEmailText) {
+  return mailto({
+    subject: text.subject,
+    body: [
+      text.greeting,
+      "",
+      text.intro,
+      "",
+      text.businessName,
+      text.volumes,
+      text.destinations,
+      "",
+      text.thanks,
+    ].join("\n"),
+  });
+}

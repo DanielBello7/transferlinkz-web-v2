@@ -1,34 +1,39 @@
 import Link from "next/link";
-import { LEGAL_PAGES } from "../../pages";
+import { getDictionary, getHref } from "@/i18n/server";
+import { LEGAL_PAGES, type LegalDocumentKey } from "../../pages";
 
 type LegalSwitchProps = {
-  path: string;
+  current: LegalDocumentKey;
 };
 
 // Links between the legal documents
-export function LegalSwitch({ path }: LegalSwitchProps) {
+export async function LegalSwitch({ current }: LegalSwitchProps) {
+  const { legal } = await getDictionary();
+
   return (
     <nav
-      aria-label="Legal documents"
+      aria-label={legal.switchLabel}
       className="inline-flex flex-wrap justify-center gap-3"
     >
-      {LEGAL_PAGES.map((page) => {
-        const current = page.href === path;
-        return (
-          <Link
-            key={page.href}
-            href={page.href}
-            aria-current={current ? "page" : undefined}
-            className={`rounded-lg border px-5 py-2.5 text-sm transition-colors ${
-              current
-                ? "border-brand bg-brand text-white"
-                : "border-frame text-white hover:border-white"
-            }`}
-          >
-            {page.label}
-          </Link>
-        );
-      })}
+      {await Promise.all(
+        LEGAL_PAGES.map(async (page) => {
+          const isCurrent = page.key === current;
+          return (
+            <Link
+              key={page.key}
+              href={await getHref(page.href)}
+              aria-current={isCurrent ? "page" : undefined}
+              className={`rounded-lg border px-5 py-2.5 text-sm transition-colors ${
+                isCurrent
+                  ? "border-brand bg-brand text-white"
+                  : "border-frame text-white hover:border-white"
+              }`}
+            >
+              {legal.documents[page.key]}
+            </Link>
+          );
+        }),
+      )}
     </nav>
   );
 }

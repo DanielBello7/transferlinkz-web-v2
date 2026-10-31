@@ -7,6 +7,7 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "eslint",
+		"i18n:check": "tsx --tsconfig tsconfig.json i18n/check.ts",
 		"db:migrate": "node --env-file-if-exists=.env --env-file-if-exists=.env.local ./node_modules/purplekit/build/src/app.js migrate",
 		"db:status": "node --env-file-if-exists=.env --env-file-if-exists=.env.local ./node_modules/purplekit/build/src/app.js status",
 		"db:gen": "node --env-file-if-exists=.env --env-file-if-exists=.env.local ./node_modules/purplekit/build/src/app.js gen"

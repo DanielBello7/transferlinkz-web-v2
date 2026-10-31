@@ -1,15 +1,25 @@
 import { Reveal } from "@/components/reveal";
+import type { GuestMockupText } from "@/components/guest-mockup";
 import type { SolutionRole } from "../roles";
 import { RoleCard } from "./role-card";
 import { RoleVisual } from "./role-visual";
 
 type RoleSectionProps = {
   role: SolutionRole;
+  // The role's words (dictionary: solutions.roles.<id>)
+  copy: {
+    eyebrow: string;
+    heading: string;
+    paragraph: string;
+    cards: { title: string; description: string }[];
+    alt: string;
+  };
+  mockup: GuestMockupText;
   // Position in the list: odd sections are grey and put the visual on the left
   index: number;
 };
 
-export function RoleSection({ role, index }: RoleSectionProps) {
+export function RoleSection({ role, copy, mockup, index }: RoleSectionProps) {
   const alternate = index % 2 === 1;
 
   return (
@@ -33,28 +43,30 @@ export function RoleSection({ role, index }: RoleSectionProps) {
                 className="size-2 rounded-full"
                 style={{ backgroundColor: role.accent }}
               />
-              {role.eyebrow}
+              {copy.eyebrow}
             </p>
             <h2
               id={`${role.id}-heading`}
               className="mt-3.5 text-[28px] leading-10 font-semibold lg:text-[40px] lg:leading-[48px]"
             >
-              {role.heading}
+              {copy.heading}
             </h2>
             <p className="mt-4 max-w-[520px] text-sm leading-6 font-light">
-              {role.paragraph}
+              {copy.paragraph}
             </p>
           </Reveal>
 
           <RoleVisual
             visual={role.visual}
+            alt={copy.alt}
+            mockup={mockup}
             tint={role.tint}
             className={alternate ? "min-[1180px]:order-1" : ""}
           />
         </div>
 
         <div className="mt-12 grid gap-5 lg:grid-cols-3 min-[1180px]:mt-[72px]">
-          {role.cards.map((card, cardIndex) => (
+          {copy.cards.map((card, cardIndex) => (
             <RoleCard
               key={card.title}
               card={card}

@@ -19,12 +19,17 @@ export function firstName(fullName: string) {
   return /^[\p{L}][\p{L}'’-]{0,29}$/u.test(first) ? first : null;
 }
 
-export function greeting(fullName: string) {
+export function greeting(
+  fullName: string,
+  words: { greetingNamed: (name: string) => string; greetingPlain: string },
+) {
   const first = firstName(fullName);
-  return first ? `Hi ${first},` : "Hello,";
+  return first ? words.greetingNamed(first) : words.greetingPlain;
 }
 
 type LayoutOptions = {
+  // The email's language, for the <html lang> attribute
+  lang: string;
   // The grey preview line some email apps show next to the subject
   preheader: string;
   heading: string;
@@ -35,13 +40,14 @@ type LayoutOptions = {
 };
 
 export function renderEmail({
+  lang,
   preheader,
   heading,
   bodyHtml,
   footerHtml,
 }: LayoutOptions) {
   return `<!doctype html>
-<html lang="en">
+<html lang="${lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

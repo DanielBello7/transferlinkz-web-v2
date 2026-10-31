@@ -2,9 +2,13 @@ import Link from "next/link";
 import { HeroBackground } from "@/components/hero-background";
 import { JoinWaitlistButton } from "@/components/join-waitlist-button";
 import { Reveal } from "@/components/reveal";
+import { getDictionary } from "@/i18n/server";
 
 // Plays its intro on load, like the other heroes.
-export function SolutionsHero() {
+export async function SolutionsHero() {
+  const { solutions } = await getDictionary();
+  const t = solutions.hero;
+
   return (
     <section className="relative overflow-hidden bg-ink-900">
       <HeroBackground />
@@ -15,7 +19,7 @@ export function SolutionsHero() {
           immediate
           className="text-xs leading-5 text-white uppercase"
         >
-          Solutions
+          {t.eyebrow}
         </Reveal>
 
         <Reveal
@@ -24,8 +28,8 @@ export function SolutionsHero() {
           delay={100}
           className="mt-2.5 text-[34px] leading-[1.2] font-semibold text-balance text-white lg:text-[48px] lg:leading-[58px] lg:text-wrap"
         >
-          One operation, the right tools
-          <br className="hidden lg:block" /> for every role.
+          {t.titleLines[0]}
+          <br className="hidden lg:block" /> {t.titleLines[1]}
         </Reveal>
 
         <Reveal
@@ -34,9 +38,7 @@ export function SolutionsHero() {
           delay={200}
           className="mx-auto mt-[11px] max-w-[680px] text-base leading-8 font-light text-white"
         >
-          TransferLinkz gives tour operators, transfer suppliers, drivers and
-          guests exactly what they need, all working from the same live transfer
-          plan.
+          {t.intro}
         </Reveal>
 
         <Reveal
@@ -49,7 +51,7 @@ export function SolutionsHero() {
             href="#roles"
             className="rounded-lg border border-frame px-3 py-2.5 text-xs whitespace-nowrap text-white btn-lift hover:border-white sm:px-6 sm:py-3 sm:text-sm"
           >
-            Explore by role
+            {t.exploreByRole}
           </Link>
         </Reveal>
       </div>

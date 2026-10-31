@@ -1,12 +1,15 @@
 "use server";
 
 import { after } from "next/server";
+import { dictionaries } from "@/i18n/dictionaries";
+import { localeFromForm } from "@/i18n/from-form";
 import { clientIp } from "@/lib/client-ip";
 import { SUPPORT_EMAIL } from "@/lib/contact";
 import { sendEmail } from "@/lib/mail/send-email";
 import { contactAcknowledgementEmail } from "@/lib/mail/templates/contact-acknowledgement";
 import { contactNotificationEmail } from "@/lib/mail/templates/contact-notification";
 import { allow } from "@/lib/rate-limit";
+import { englishRoleLabel, type ContactRoleId } from "./roles";
 import type { ContactState } from "./state";
 import { validateContact } from "./validate";
 
@@ -14,6 +17,8 @@ const HOUR = 60 * 60 * 1000;
 
 // Emails the team the message, and the visitor a reply saying it arrived. Used
 // as the form's action, so it also works before the page's JavaScript loads.
+// The form says which language it was shown in, and everything sent back to the
+// visitor is in that language.
 export async function sendContactMessage(
   _previous: ContactState,
   formData: FormData,
@@ -24,7 +29,10 @@ export async function sendContactMessage(
     return { status: "success" };
   }
 
-  const result = validateContact(formData);
+  const lang = localeFromForm(formData);
+  const { forms } = dictionaries[lang];
+
+  const result = validateContact(formData, forms);
   if (!result.ok) {
     return {
       status: "error",
@@ -45,35 +53,39 @@ export async function sendContactMessage(
   ) {
     return {
       status: "error",
-      message: `Too many messages. Try again later, or email ${SUPPORT_EMAIL}.`,
+      message: forms.contactTooMany(SUPPORT_EMAIL),
       values: result.input,
     };
   }
 
   // The message reaching the team is the point of the form, so this one is
   // waited for, and a failure is shown to the visitor. Replying to the email
-  // goes to the visitor.
+  // goes to the visitor. The email to the team is always in English.
   const delivered = await sendEmail({
     to: { email: SUPPORT_EMAIL, name: "TransferLinkz support" },
     replyTo: { email, name },
-    ...contactNotificationEmail(input),
+    ...contactNotificationEmail({
+      ...input,
+      role: englishRoleLabel(input.role as ContactRoleId),
+    }),
     // (the message to the team: no flag, people reply to it)
   });
   if (!delivered.ok) {
     return {
       status: "error",
-      message: `We couldn’t send your message just now. Try again, or email us at ${SUPPORT_EMAIL}.`,
+      message: forms.contactFailed(SUPPORT_EMAIL),
       values: result.input,
     };
   }
 
-  // The reply to the visitor goes out after the response. If it fails, the team
-  // still has the message, so it isn't worth failing the form over.
+  // The reply to the visitor goes out after the response, in their language. If
+  // it fails, the team still has the message, so it isn't worth failing the
+  // form over.
   after(() =>
     sendEmail({
       to: { email, name },
       replyTo: { email: SUPPORT_EMAIL, name: "TransferLinkz support" },
-      ...contactAcknowledgementEmail({ name }),
+      ...contactAcknowledgementEmail({ name, lang }),
       automated: true,
     }),
   );

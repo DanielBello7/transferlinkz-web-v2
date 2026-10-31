@@ -1,9 +1,8 @@
 import { CheckBadgeIcon } from "@/components/check-badge-icon";
 import { Reveal } from "@/components/reveal";
-import type { Reassurance } from "../reassurances";
 
 type ReassuranceCardProps = {
-  item: Reassurance;
+  item: { title: string; description: string };
   // Reveal delay in ms, to stagger the cards
   delay?: number;
 };

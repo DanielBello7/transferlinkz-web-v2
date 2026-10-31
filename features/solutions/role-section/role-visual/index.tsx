@@ -1,16 +1,25 @@
 import Image from "next/image";
-import { GuestMockup } from "@/components/guest-mockup";
+import { GuestMockup, type GuestMockupText } from "@/components/guest-mockup";
 import { Reveal } from "@/components/reveal";
 import type { SolutionVisual } from "../../roles";
 
 type RoleVisualProps = {
   visual: SolutionVisual;
+  // Description of the screenshot, for screen readers
+  alt: string;
+  mockup: GuestMockupText;
   // The panel the product art sits on
   tint: string;
   className?: string;
 };
 
-export function RoleVisual({ visual, tint, className }: RoleVisualProps) {
+export function RoleVisual({
+  visual,
+  alt,
+  mockup,
+  tint,
+  className,
+}: RoleVisualProps) {
   return (
     <Reveal
       delay={150}
@@ -21,7 +30,7 @@ export function RoleVisual({ visual, tint, className }: RoleVisualProps) {
         {visual.kind === "image" ? (
           <Image
             src={visual.src}
-            alt={visual.alt}
+            alt={alt}
             width={visual.width}
             height={visual.height}
             unoptimized
@@ -33,7 +42,7 @@ export function RoleVisual({ visual, tint, className }: RoleVisualProps) {
             }
           />
         ) : (
-          <GuestMockup label={visual.label} />
+          <GuestMockup t={mockup} />
         )}
       </div>
     </Reveal>

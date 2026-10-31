@@ -1,21 +1,24 @@
 import { JsonLd } from "@/components/json-ld";
 import { Reveal } from "@/components/reveal";
+import { getDictionary } from "@/i18n/server";
 import { FaqList } from "./faq-list";
-import { FAQS } from "./faqs";
 
-// Lets search engines show the questions and answers in results
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: FAQS.map((faq) => ({
-    "@type": "Question",
-    name: faq.question,
-    acceptedAnswer: { "@type": "Answer", text: faq.answer },
-  })),
-};
+// Shared by the home, About and Solutions pages
+export async function FaqSection() {
+  const { common } = await getDictionary();
+  const { faq } = common;
 
-// Shared by the home and About pages
-export function FaqSection() {
+  // Lets search engines show the questions and answers in results
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  };
+
   return (
     <section className="overflow-hidden bg-white">
       <JsonLd data={faqSchema} />
@@ -23,17 +26,17 @@ export function FaqSection() {
         <div className="flex flex-col gap-10 lg:flex-row lg:justify-between lg:gap-0">
           <Reveal className="text-navy lg:mt-4">
             <p className="text-xs leading-5 font-light uppercase">
-              A few things you might be wondering
+              {faq.eyebrow}
             </p>
             <h2 className="mt-2 text-[28px] leading-10 font-semibold lg:mt-[9px] lg:text-[40px] lg:leading-[58px]">
-              Good questions.
+              {faq.headingLines[0]}
               <br />
-              Clear answers.
+              {faq.headingLines[1]}
             </h2>
           </Reveal>
 
           <div className="lg:w-[673px] lg:shrink-0">
-            <FaqList />
+            <FaqList items={faq.items} />
           </div>
         </div>
       </div>

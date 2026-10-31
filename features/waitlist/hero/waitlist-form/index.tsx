@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { FormField } from "@/components/form-field";
 import { CONTROL_CLASS } from "@/components/form-field/styles";
+import type { Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/dictionaries/types";
 import { joinWaitlist } from "../../actions";
 import { INITIAL_WAITLIST_STATE } from "../../state";
 import { WaitlistSuccess } from "./waitlist-success";
@@ -11,7 +13,25 @@ import { WaitlistSuccess } from "./waitlist-success";
 const CARD_CLASS =
   "rounded bg-white px-5 py-8 min-[1180px]:px-[30px] min-[1180px]:py-[38px]";
 
-export function WaitlistForm() {
+type WaitlistFormProps = {
+  // The page's language: sent with the form so the replies come back in it
+  lang: Locale;
+  // The form's words (dictionary: waitlist.form and waitlist.success)
+  t: Dictionary["waitlist"]["form"];
+  success: Dictionary["waitlist"]["success"];
+  homeHref: string;
+  privacyHref: string;
+  backToHome: string;
+};
+
+export function WaitlistForm({
+  lang,
+  t,
+  success,
+  homeHref,
+  privacyHref,
+  backToHome,
+}: WaitlistFormProps) {
   const [state, formAction, pending] = useActionState(
     joinWaitlist,
     INITIAL_WAITLIST_STATE,
@@ -20,7 +40,12 @@ export function WaitlistForm() {
   if (state.status === "success") {
     return (
       <div className={CARD_CLASS}>
-        <WaitlistSuccess />
+        <WaitlistSuccess
+          title={success.title}
+          body={success.body}
+          homeHref={homeHref}
+          backToHome={backToHome}
+        />
       </div>
     );
   }
@@ -35,13 +60,14 @@ export function WaitlistForm() {
 
   return (
     <form action={formAction} className={`relative ${CARD_CLASS}`}>
+      <input type="hidden" name="lang" value={lang} />
       <h2 className="text-xl leading-7 font-semibold text-black">
-        Join the waitlist
+        {t.title}
       </h2>
 
       <div className="mt-9 grid gap-x-5 gap-y-[22px] min-[640px]:grid-cols-2">
         <FormField
-          label="Full name"
+          label={t.name.label}
           htmlFor="waitlist-name"
           error={errors.name}
         >
@@ -52,7 +78,7 @@ export function WaitlistForm() {
             required
             maxLength={120}
             autoComplete="name"
-            placeholder="Jane Smith"
+            placeholder={t.name.placeholder}
             defaultValue={values.name}
             aria-invalid={errors.name ? true : undefined}
             aria-describedby={errors.name ? "waitlist-name-error" : undefined}
@@ -61,7 +87,7 @@ export function WaitlistForm() {
         </FormField>
 
         <FormField
-          label="Work email"
+          label={t.email.label}
           htmlFor="waitlist-email"
           error={errors.email}
         >
@@ -72,7 +98,7 @@ export function WaitlistForm() {
             required
             maxLength={254}
             autoComplete="email"
-            placeholder="you@companymail.com"
+            placeholder={t.email.placeholder}
             defaultValue={values.email}
             aria-invalid={errors.email ? true : undefined}
             aria-describedby={errors.email ? "waitlist-email-error" : undefined}
@@ -81,7 +107,7 @@ export function WaitlistForm() {
         </FormField>
 
         <FormField
-          label="Company (optional)"
+          label={t.company.label}
           htmlFor="waitlist-company"
           error={errors.company}
           className="min-[640px]:col-span-2"
@@ -92,7 +118,7 @@ export function WaitlistForm() {
             type="text"
             maxLength={160}
             autoComplete="organization"
-            placeholder="Company name"
+            placeholder={t.company.placeholder}
             defaultValue={values.company}
             aria-invalid={errors.company ? true : undefined}
             aria-describedby={
@@ -109,17 +135,17 @@ export function WaitlistForm() {
         className="absolute -left-[9999px] h-0 w-0 overflow-hidden"
       >
         <label>
-          Website
+          {t.websiteTrap}
           <input type="text" name="website" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
 
       <p className="mt-6 text-xs leading-4 text-navy">
-        We’ll only use your details to contact you about early access. Read our{" "}
-        <Link href="/privacy" className="underline underline-offset-2">
-          Privacy Policy
+        {t.noteBefore}{" "}
+        <Link href={privacyHref} className="underline underline-offset-2">
+          {t.noteLink}
         </Link>
-        .
+        {t.noteAfter}
       </p>
 
       <button
@@ -127,7 +153,7 @@ export function WaitlistForm() {
         disabled={pending}
         className="mt-6 h-[43px] w-full btn-lift btn-lift-brand cursor-pointer rounded-lg bg-brand text-sm text-white hover:bg-brand-hover disabled:cursor-wait disabled:opacity-70"
       >
-        {pending ? "Joining…" : "Join waitlist"}
+        {pending ? t.joining : t.submit}
       </button>
 
       <p

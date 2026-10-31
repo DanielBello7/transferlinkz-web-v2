@@ -1,15 +1,19 @@
 import { HeroBackground } from "@/components/hero-background";
 import { Reveal } from "@/components/reveal";
+import { getDictionary } from "@/i18n/server";
+import type { LegalDocumentKey } from "../pages";
 import { LegalSwitch } from "./legal-switch";
 
 type LegalHeroProps = {
   title: string;
   effective: string;
-  path: string;
+  current: LegalDocumentKey;
 };
 
 // Plays its intro on load, like the other heroes.
-export function LegalHero({ title, effective, path }: LegalHeroProps) {
+export async function LegalHero({ title, effective, current }: LegalHeroProps) {
+  const { legal } = await getDictionary();
+
   return (
     <section className="relative overflow-hidden bg-ink-900">
       <HeroBackground tone="warm" />
@@ -20,7 +24,7 @@ export function LegalHero({ title, effective, path }: LegalHeroProps) {
           immediate
           className="text-xs leading-5 text-white uppercase"
         >
-          Legal
+          {legal.eyebrow}
         </Reveal>
 
         <Reveal
@@ -38,11 +42,11 @@ export function LegalHero({ title, effective, path }: LegalHeroProps) {
           delay={200}
           className="mt-[11px] text-base leading-8 font-light text-white"
         >
-          Effective date: {effective}
+          {legal.effectiveDate} {effective}
         </Reveal>
 
         <Reveal immediate delay={300} className="mt-8">
-          <LegalSwitch path={path} />
+          <LegalSwitch current={current} />
         </Reveal>
       </div>
     </section>

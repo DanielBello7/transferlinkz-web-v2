@@ -1,9 +1,14 @@
 import { HeroBackground } from "@/components/hero-background";
 import { Reveal } from "@/components/reveal";
+import { getDictionary, getHref, getLocale } from "@/i18n/server";
 import { WaitlistForm } from "./waitlist-form";
 
 // Plays its intro on load, like the other heroes.
-export function WaitlistHero() {
+export async function WaitlistHero() {
+  const { waitlist, common } = await getDictionary();
+  const lang = await getLocale();
+  const t = waitlist.hero;
+
   return (
     <section className="relative overflow-hidden bg-ink-900">
       <HeroBackground tone="warm" />
@@ -15,7 +20,7 @@ export function WaitlistHero() {
             immediate
             className="text-xs leading-5 uppercase min-[1180px]:pl-[17px]"
           >
-            Early access
+            {t.eyebrow}
           </Reveal>
 
           <Reveal
@@ -24,7 +29,7 @@ export function WaitlistHero() {
             delay={100}
             className="mt-[11px] text-[34px] leading-[1.2] font-semibold text-balance min-[1180px]:max-w-[500px] min-[1180px]:text-[48px] min-[1180px]:leading-[58px] min-[1180px]:text-wrap"
           >
-            Join the waitlist.
+            {t.title}
           </Reveal>
 
           <Reveal
@@ -33,13 +38,19 @@ export function WaitlistHero() {
             delay={200}
             className="mt-3 max-w-[500px] text-base leading-8 font-light"
           >
-            We’re onboarding a small group of pilot partners for 2026. Tell us
-            who you are and we’ll be in touch about early access.
+            {t.intro}
           </Reveal>
         </div>
 
         <Reveal immediate delay={150} className="min-[1180px]:w-[570px]">
-          <WaitlistForm />
+          <WaitlistForm
+            lang={lang}
+            t={waitlist.form}
+            success={waitlist.success}
+            homeHref={await getHref("/")}
+            privacyHref={await getHref("/privacy")}
+            backToHome={common.backToHome}
+          />
         </Reveal>
       </div>
     </section>

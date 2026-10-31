@@ -1,10 +1,9 @@
 import type { LegalDocumentContent } from "@/components/legal-document/types";
 
 // Converted from the supplied .docx in ui-web-designs/4-legal. {email} becomes
-// the support address.
+// the support address. The title and effective date are in the dictionary
+// (legal.documents and legal.effectiveDateValue). The text is English only.
 export const PRIVACY_POLICY: LegalDocumentContent = {
-  title: "Privacy Policy",
-  effective: "1 October 2026",
   intro: [
     {
       type: "p",

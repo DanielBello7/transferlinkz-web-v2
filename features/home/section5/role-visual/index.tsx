@@ -1,15 +1,18 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { GuestMockup } from "@/components/guest-mockup";
+import { GuestMockup, type GuestMockupText } from "@/components/guest-mockup";
 import { Reveal } from "@/components/reveal";
 import type { Role } from "../roles";
 
 type RoleVisualProps = {
   role: Role;
+  // Description of the screenshot, for screen readers
+  alt: string;
+  mockup: GuestMockupText;
 };
 
 // Remounts on every role change (keyed by the parent), so the reveal replays.
-export function RoleVisual({ role }: RoleVisualProps) {
+export function RoleVisual({ role, alt, mockup }: RoleVisualProps) {
   const { visual } = role;
 
   return (
@@ -27,7 +30,7 @@ export function RoleVisual({ role }: RoleVisualProps) {
       {visual.kind === "image" ? (
         <Image
           src={visual.src}
-          alt={visual.alt}
+          alt={alt}
           width={visual.width}
           height={visual.height}
           unoptimized
@@ -37,7 +40,7 @@ export function RoleVisual({ role }: RoleVisualProps) {
           }
         />
       ) : (
-        <GuestMockup label={visual.label} />
+        <GuestMockup t={mockup} />
       )}
     </Reveal>
   );

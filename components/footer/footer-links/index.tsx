@@ -10,12 +10,18 @@ export type FooterLink = {
 type FooterLinksProps = {
   links: FooterLink[];
   className?: string;
+  // Read out after an external link's name (e.g. "(opens in a new tab)")
+  externalHint?: string;
 };
 
 const LINK_CLASS =
   "text-base whitespace-nowrap text-white transition-colors hover:text-white/70";
 
-export function FooterLinks({ links, className }: FooterLinksProps) {
+export function FooterLinks({
+  links,
+  className,
+  externalHint,
+}: FooterLinksProps) {
   return (
     <ul className={`flex flex-col gap-7 ${className ?? ""}`}>
       {links.map((link) => (
@@ -28,7 +34,7 @@ export function FooterLinks({ links, className }: FooterLinksProps) {
               className={LINK_CLASS}
             >
               {link.label}
-              <span className="sr-only"> (opens in a new tab)</span>
+              <span className="sr-only"> {externalHint}</span>
             </a>
           ) : (
             <Link href={link.href} className={LINK_CLASS}>

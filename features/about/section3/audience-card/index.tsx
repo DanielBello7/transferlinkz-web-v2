@@ -1,9 +1,13 @@
 import Image from "next/image";
 import { Reveal } from "@/components/reveal";
-import type { Audience } from "../audiences";
+
 
 type AudienceCardProps = {
-  audience: Audience;
+  audience: {
+    title: string;
+    description: string;
+    icon: { src: string; width: number; height: number };
+  };
   // Reveal delay in ms, to stagger the cards
   delay?: number;
 };

@@ -5,7 +5,7 @@ import { TERMS_OF_SERVICE } from "./content";
 export function Terms() {
   return (
     <>
-      <LegalDocument content={TERMS_OF_SERVICE} path="/terms" />
+      <LegalDocument content={TERMS_OF_SERVICE} document="terms" />
       <CtaSection />
     </>
   );

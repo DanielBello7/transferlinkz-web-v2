@@ -1,13 +1,18 @@
 import type { LegalDocumentContent } from "../types";
+import { RichText } from "./legal-section/rich-text";
 import { ContentsList } from "./contents-list";
 import { LegalBlocks } from "./legal-section/legal-blocks";
 import { LegalSection } from "./legal-section";
 
 type LegalBodyProps = {
   content: LegalDocumentContent;
+  // "On this page"
+  onThisPage: string;
+  // Shown above a document that exists only in English; empty when it doesn't
+  notice: string;
 };
 
-export function LegalBody({ content }: LegalBodyProps) {
+export function LegalBody({ content, onThisPage, notice }: LegalBodyProps) {
   return (
     // overflow-x-clip, not hidden, so the contents list can stay sticky
     <section className="overflow-x-clip bg-white">
@@ -16,23 +21,28 @@ export function LegalBody({ content }: LegalBodyProps) {
           <aside className="lg:w-[260px] lg:shrink-0">
             <details className="rounded-lg border border-line-light px-4 py-3 lg:hidden">
               <summary className="cursor-pointer text-sm font-semibold text-navy">
-                On this page
+                {onThisPage}
               </summary>
               <ContentsList sections={content.sections} className="mt-4" />
             </details>
 
             <nav
-              aria-label="On this page"
+              aria-label={onThisPage}
               className="sticky top-8 hidden lg:block"
             >
               <p className="text-xs leading-5 font-light text-navy uppercase">
-                On this page
+                {onThisPage}
               </p>
               <ContentsList sections={content.sections} className="mt-4" />
             </nav>
           </aside>
 
           <article className="text-navy lg:w-[720px]">
+            {notice && (
+              <p className="mb-8 rounded-[3px] border border-line-light bg-[#f4f6fa] p-5 text-sm leading-6 font-light">
+                <RichText text={notice} />
+              </p>
+            )}
             <LegalBlocks blocks={content.intro} />
             {content.sections.map((section, index) => (
               <LegalSection

@@ -5,7 +5,7 @@ import { PRIVACY_POLICY } from "./content";
 export function Privacy() {
   return (
     <>
-      <LegalDocument content={PRIVACY_POLICY} path="/privacy" />
+      <LegalDocument content={PRIVACY_POLICY} document="privacy" />
       <CtaSection />
     </>
   );

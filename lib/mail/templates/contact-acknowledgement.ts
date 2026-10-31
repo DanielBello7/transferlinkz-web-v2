@@ -1,49 +1,53 @@
+import type { Locale } from "@/i18n/config";
+import { dictionaries } from "@/i18n/dictionaries";
+import { localePath } from "@/i18n/locale-path";
 import { absoluteUrl, site } from "@/lib/site";
 import { escapeHtml, greeting, paragraph, renderEmail } from "./layout";
 
 type ContactAcknowledgementInput = {
   name: string;
+  // The language the visitor was using
+  lang: Locale;
 };
 
 // Sent to the person who used the contact form. It deliberately doesn't repeat
 // what they wrote: it goes to whatever address was typed into the form.
 export function contactAcknowledgementEmail({
   name,
+  lang,
 }: ContactAcknowledgementInput) {
-  const hello = greeting(name);
-  const privacyUrl = absoluteUrl("/privacy");
-
-  const subject = "We’ve received your message";
-  const body =
-    "Thanks for getting in touch. We’ve received your message and we’ll get back to you as soon as possible.";
-  const extra =
-    "If there’s anything you forgot to mention, just reply to this email.";
+  const { emails } = dictionaries[lang];
+  const t = emails.contact;
+  const hello = greeting(name, emails);
+  const privacyUrl = absoluteUrl(localePath(lang, "/privacy"));
+  const host = site.url.replace(/^https?:\/\//, "");
 
   const html = renderEmail({
-    preheader: "We’ll get back to you as soon as possible.",
-    heading: "We’ve got your message",
+    lang,
+    preheader: t.preheader,
+    heading: t.heading,
     bodyHtml: [
       paragraph(escapeHtml(hello)),
-      paragraph(escapeHtml(body)),
-      paragraph(escapeHtml(extra)),
-      paragraph("The TransferLinkz team"),
+      paragraph(escapeHtml(t.body)),
+      paragraph(escapeHtml(t.extra)),
+      paragraph(escapeHtml(emails.signoff)),
     ].join("\n"),
-    footerHtml: `You’re receiving this because someone sent a message through the contact form at ${escapeHtml(site.url.replace(/^https?:\/\//, ""))} with this address. If that wasn’t you, you can ignore this email. <a href="${escapeHtml(privacyUrl)}" style="color:#6a7081;">Privacy Policy</a>`,
+    footerHtml: `${escapeHtml(t.footer(host))} <a href="${escapeHtml(privacyUrl)}" style="color:#6a7081;">${escapeHtml(emails.privacyPolicy)}</a>`,
   });
 
   const text = [
     hello,
     "",
-    body,
+    t.body,
     "",
-    extra,
+    t.extra,
     "",
-    "The TransferLinkz team",
+    emails.signoff,
     "",
     "--",
-    `You’re receiving this because someone sent a message through the contact form at ${site.url} with this address. If that wasn’t you, you can ignore this email.`,
-    `Privacy Policy: ${privacyUrl}`,
+    t.footer(site.url),
+    `${emails.privacyPolicy}: ${privacyUrl}`,
   ].join("\n");
 
-  return { subject, html, text };
+  return { subject: t.subject, html, text };
 }

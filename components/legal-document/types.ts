@@ -13,8 +13,6 @@ export type LegalSection = {
 };
 
 export type LegalDocumentContent = {
-  title: string;
-  effective: string;
   intro: LegalBlock[];
   sections: LegalSection[];
 };

@@ -1,9 +1,8 @@
 import { Reveal } from "@/components/reveal";
-import type { HowItWorksStep } from "../steps";
 
 type StepProps = {
   number: number;
-  step: HowItWorksStep;
+  step: { title: string; description: string };
   // Reveal delay in ms, to stagger the steps
   delay?: number;
 };

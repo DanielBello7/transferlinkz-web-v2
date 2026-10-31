@@ -1,46 +1,52 @@
+import type { Locale } from "@/i18n/config";
+import { dictionaries } from "@/i18n/dictionaries";
+import { localePath } from "@/i18n/locale-path";
 import { absoluteUrl, site } from "@/lib/site";
 import { escapeHtml, greeting, paragraph, renderEmail } from "./layout";
 
 type WaitlistConfirmationInput = {
   name: string;
+  // The language the visitor was using
+  lang: Locale;
 };
 
 // Sent when someone joins the waitlist
-export function waitlistConfirmationEmail({ name }: WaitlistConfirmationInput) {
-  const hello = greeting(name);
-  const privacyUrl = absoluteUrl("/privacy");
-
-  const subject = "You’re on the TransferLinkz waitlist";
-  const intro =
-    "Thanks for joining the TransferLinkz waitlist. We’re onboarding a small group of pilot partners for 2026, and we’ll be in touch about early access.";
-  const reply =
-    "In the meantime, if you have questions about how TransferLinkz could fit your operation, just reply to this email.";
+export function waitlistConfirmationEmail({
+  name,
+  lang,
+}: WaitlistConfirmationInput) {
+  const { emails } = dictionaries[lang];
+  const t = emails.waitlist;
+  const hello = greeting(name, emails);
+  const privacyUrl = absoluteUrl(localePath(lang, "/privacy"));
+  const host = site.url.replace(/^https?:\/\//, "");
 
   const html = renderEmail({
-    preheader: "Thanks for joining. We’ll be in touch about early access.",
-    heading: "You’re on the list",
+    lang,
+    preheader: t.preheader,
+    heading: t.heading,
     bodyHtml: [
       paragraph(escapeHtml(hello)),
-      paragraph(escapeHtml(intro)),
-      paragraph(escapeHtml(reply)),
-      paragraph("The TransferLinkz team"),
+      paragraph(escapeHtml(t.intro)),
+      paragraph(escapeHtml(t.reply)),
+      paragraph(escapeHtml(emails.signoff)),
     ].join("\n"),
-    footerHtml: `You’re receiving this because someone joined the waitlist at ${escapeHtml(site.url.replace(/^https?:\/\//, ""))} with this address. If that wasn’t you, reply and we’ll remove it. <a href="${escapeHtml(privacyUrl)}" style="color:#6a7081;">Privacy Policy</a>`,
+    footerHtml: `${escapeHtml(t.footer(host))} <a href="${escapeHtml(privacyUrl)}" style="color:#6a7081;">${escapeHtml(emails.privacyPolicy)}</a>`,
   });
 
   const text = [
     hello,
     "",
-    intro,
+    t.intro,
     "",
-    reply,
+    t.reply,
     "",
-    "The TransferLinkz team",
+    emails.signoff,
     "",
     "--",
-    `You’re receiving this because someone joined the waitlist at ${site.url} with this address. If that wasn’t you, reply and we’ll remove it.`,
-    `Privacy Policy: ${privacyUrl}`,
+    t.footer(site.url),
+    `${emails.privacyPolicy}: ${privacyUrl}`,
   ].join("\n");
 
-  return { subject, html, text };
+  return { subject: t.subject, html, text };
 }

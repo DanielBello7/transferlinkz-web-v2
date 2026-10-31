@@ -1,6 +1,8 @@
 "use server";
 
 import { after } from "next/server";
+import { dictionaries } from "@/i18n/dictionaries";
+import { localeFromForm } from "@/i18n/from-form";
 import { clientIp } from "@/lib/client-ip";
 import { SUPPORT_EMAIL } from "@/lib/contact";
 import { getPool } from "@/lib/db";
@@ -22,7 +24,10 @@ export async function joinWaitlist(
     return { status: "success" };
   }
 
-  const result = validateWaitlist(formData);
+  const lang = localeFromForm(formData);
+  const { forms } = dictionaries[lang];
+
+  const result = validateWaitlist(formData, forms);
   if (!result.ok) {
     return {
       status: "error",
@@ -38,7 +43,7 @@ export async function joinWaitlist(
   if (!allow(`waitlist:${await clientIp()}`, 10, 60 * 60 * 1000)) {
     return {
       status: "error",
-      message: `Too many attempts. Try again later, or email ${SUPPORT_EMAIL}.`,
+      message: forms.waitlistTooMany(SUPPORT_EMAIL),
       values: { name, email, company: company ?? "" },
     };
   }
@@ -69,7 +74,7 @@ export async function joinWaitlist(
         sendEmail({
           to: { email, name },
           replyTo: { email: SUPPORT_EMAIL, name: "TransferLinkz support" },
-          ...waitlistConfirmationEmail({ name }),
+          ...waitlistConfirmationEmail({ name, lang }),
           automated: true,
         }),
       );
@@ -78,7 +83,7 @@ export async function joinWaitlist(
     console.error("Waitlist signup failed:", error);
     return {
       status: "error",
-      message: `Something went wrong on our side. Try again in a moment, or email ${SUPPORT_EMAIL}.`,
+      message: forms.waitlistFailed(SUPPORT_EMAIL),
       values: { name, email, company: company ?? "" },
     };
   }

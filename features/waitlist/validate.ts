@@ -1,3 +1,4 @@
+import type { Dictionary } from "@/i18n/dictionaries/types";
 import { EMAIL_PATTERN, readText } from "@/lib/validation";
 import type { WaitlistField, WaitlistValues } from "./state";
 
@@ -21,7 +22,10 @@ type ValidationResult =
 
 // Checks the submitted form. Runs on the server: the browser's own checks
 // are a convenience and can't be trusted.
-export function validateWaitlist(formData: FormData): ValidationResult {
+export function validateWaitlist(
+  formData: FormData,
+  messages: Dictionary["forms"],
+): ValidationResult {
   const values: WaitlistValues = {
     name: readText(formData, "name"),
     email: readText(formData, "email"),
@@ -30,22 +34,22 @@ export function validateWaitlist(formData: FormData): ValidationResult {
   const fieldErrors: Partial<Record<WaitlistField, string>> = {};
 
   if (!values.name) {
-    fieldErrors.name = "Enter your name";
+    fieldErrors.name = messages.nameRequired;
   } else if (values.name.length > MAX_LENGTH.name) {
-    fieldErrors.name = `Keep your name under ${MAX_LENGTH.name} characters`;
+    fieldErrors.name = messages.nameTooLong(MAX_LENGTH.name);
   }
 
   if (!values.email) {
-    fieldErrors.email = "Enter your email";
+    fieldErrors.email = messages.emailRequired;
   } else if (
     values.email.length > MAX_LENGTH.email ||
     !EMAIL_PATTERN.test(values.email)
   ) {
-    fieldErrors.email = "Enter a valid email, like you@company.com";
+    fieldErrors.email = messages.emailInvalid;
   }
 
   if (values.company.length > MAX_LENGTH.company) {
-    fieldErrors.company = `Keep the company name under ${MAX_LENGTH.company} characters`;
+    fieldErrors.company = messages.companyTooLong(MAX_LENGTH.company);
   }
 
   if (Object.keys(fieldErrors).length > 0) {

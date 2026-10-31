@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { HeroBackground } from "@/components/hero-background";
 import { Reveal } from "@/components/reveal";
+import { getDictionary, getHref } from "@/i18n/server";
 
-// Shown for any address that has no page. Plays its intro on load, like the
-// heroes, and keeps the header and footer from the root layout.
-export function NotFoundPage() {
+// Shown for any address that has no page (app/[lang]/page-not-found). Plays its
+// intro on load, like the heroes, and keeps the header and footer from the root
+// layout.
+export async function NotFoundPage() {
+  const { notFound } = await getDictionary();
+
   return (
     <section className="relative overflow-hidden bg-ink-900">
       <HeroBackground />
@@ -16,7 +20,7 @@ export function NotFoundPage() {
           aria-hidden="true"
           className="text-[88px] leading-none font-semibold text-[#6ea4f7] lg:text-[144px]"
         >
-          404
+          {notFound.code}
         </Reveal>
 
         <Reveal
@@ -25,7 +29,7 @@ export function NotFoundPage() {
           delay={100}
           className="mt-4 text-xs leading-5 text-white uppercase"
         >
-          Page not found
+          {notFound.eyebrow}
         </Reveal>
 
         <Reveal
@@ -34,7 +38,7 @@ export function NotFoundPage() {
           delay={150}
           className="mt-2.5 text-[34px] leading-[1.2] font-semibold text-balance text-white lg:text-[48px] lg:leading-[58px]"
         >
-          We can’t find that page.
+          {notFound.title}
         </Reveal>
 
         <Reveal
@@ -43,8 +47,7 @@ export function NotFoundPage() {
           delay={250}
           className="mx-auto mt-[11px] max-w-[560px] text-base leading-8 font-light text-white"
         >
-          The link may be out of date, or the page may have moved. Head back
-          home, or contact us if you were expecting something to be here.
+          {notFound.body}
         </Reveal>
 
         <Reveal
@@ -53,16 +56,16 @@ export function NotFoundPage() {
           className="mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-10"
         >
           <Link
-            href="/"
+            href={await getHref("/")}
             className="rounded-lg btn-lift btn-lift-brand bg-brand px-3 py-2.5 text-xs whitespace-nowrap text-white hover:bg-brand-hover sm:px-6 sm:py-3 sm:text-sm"
           >
-            Back to home
+            {notFound.home}
           </Link>
           <Link
-            href="/contact"
+            href={await getHref("/contact")}
             className="rounded-lg border border-frame px-3 py-2.5 text-xs whitespace-nowrap text-white btn-lift hover:border-white sm:px-6 sm:py-3 sm:text-sm"
           >
-            Contact us
+            {notFound.contact}
           </Link>
         </Reveal>
       </div>

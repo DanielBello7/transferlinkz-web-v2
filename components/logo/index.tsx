@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getDictionary, getHref } from "@/i18n/server";
 
 // Intrinsic ratio of public/images/logo.svg (403 x 87)
 const LOGO_RATIO = 87 / 403;
@@ -9,9 +10,15 @@ type LogoProps = {
   className?: string;
 };
 
-export function Logo({ width = 122, className }: LogoProps) {
+export async function Logo({ width = 122, className }: LogoProps) {
+  const { common } = await getDictionary();
+
   return (
-    <Link href="/" aria-label="TransferLinkz home" className="block w-fit shrink-0">
+    <Link
+      href={await getHref("/")}
+      aria-label={common.logoLabel}
+      className="block w-fit shrink-0"
+    >
       <Image
         src="/images/logo.svg"
         alt="TransferLinkz"
